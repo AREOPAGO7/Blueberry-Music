@@ -1,13 +1,13 @@
-"use client"
+'use client'
 
-import { useState, useRef } from "react"
-import { Play, Heart, Search, User } from "lucide-react"
+import { useState, useRef } from 'react'
+import { Play, Heart, Search, User } from "lucide-react"  
 import { Sidebar } from "@/app/components/sidebar"
 import { PlayerBar } from "@/app/components/player-bar"
 import { ProfileModal } from "@/app/components/profile-modal"
-import { AlbumDetail } from "@/app/components/album-detail"
+import { useRouter } from 'next/navigation';
+import TopBar from '@/app/components/topBar';
 
-// Types for easy database integration
 interface Song {
   id: string
   title: string
@@ -38,108 +38,32 @@ interface Playlist {
   songs: Song[]
 }
 
-// Mock data - replace with database calls
+// Mock songs data
 const mockSongs: Song[] = [
-  {
-    id: "1",
-    title: "Midnight Dreams",
-    artist: "Luna Eclipse",
-    album: "Nocturnal Vibes",
-    duration: 234,
-    coverUrl: "/placeholder.svg?height=300&width=300",
-    audioUrl: "",
-    liked: true,
-  },
-  {
-    id: "2",
-    title: "Stellar Nights",
-    artist: "Luna Eclipse",
-    album: "Nocturnal Vibes",
-    duration: 198,
-    coverUrl: "/placeholder.svg?height=300&width=300",
-    audioUrl: "",
-    liked: false,
-  },
-  {
-    id: "3",
-    title: "Cosmic Lullaby",
-    artist: "Luna Eclipse",
-    album: "Nocturnal Vibes",
-    duration: 267,
-    coverUrl: "/placeholder.svg?height=300&width=300",
-    audioUrl: "",
-    liked: true,
-  },
-  {
-    id: "4",
-    title: "Neon Lights",
-    artist: "Cyber Wave",
-    album: "Digital Horizon",
-    duration: 198,
-    coverUrl: "/placeholder.svg?height=300&width=300",
-    audioUrl: "",
-    liked: false,
-  },
-  {
-    id: "5",
-    title: "Electric Dreams",
-    artist: "Cyber Wave",
-    album: "Digital Horizon",
-    duration: 223,
-    coverUrl: "/placeholder.svg?height=300&width=300",
-    audioUrl: "",
-    liked: true,
-  },
-  {
-    id: "6",
-    title: "Binary Love",
-    artist: "Cyber Wave",
-    album: "Digital Horizon",
-    duration: 189,
-    coverUrl: "/placeholder.svg?height=300&width=300",
-    audioUrl: "",
-    liked: false,
-  },
-  {
-    id: "7",
-    title: "Stellar Journey",
-    artist: "Cosmic Drift",
-    album: "Space Odyssey",
-    duration: 267,
-    coverUrl: "/placeholder.svg?height=300&width=300",
-    audioUrl: "",
-    liked: true,
-  },
-  {
-    id: "8",
-    title: "Galactic Winds",
-    artist: "Cosmic Drift",
-    album: "Space Odyssey",
-    duration: 245,
-    coverUrl: "/placeholder.svg?height=300&width=300",
-    audioUrl: "",
-    liked: false,
-  },
-  {
-    id: "9",
-    title: "Urban Pulse",
-    artist: "City Beats",
-    album: "Metropolitan",
-    duration: 189,
-    coverUrl: "/placeholder.svg?height=300&width=300",
-    audioUrl: "",
-    liked: false,
-  },
-  {
-    id: "10",
-    title: "Street Symphony",
-    artist: "City Beats",
-    album: "Metropolitan",
-    duration: 201,
-    coverUrl: "/placeholder.svg?height=300&width=300",
-    audioUrl: "",
-    liked: true,
-  },
+  // Die Lit (Playboi Carti)
+  { id: "1", title: "Long Time", artist: "Playboi Carti", album: "Die Lit", duration: 180, coverUrl: "/albums/dieLit.jpg", audioUrl: "/audio/dielit/longtime.mp3", liked: false },
+  { id: "2", title: "R.I.P.", artist: "Playboi Carti", album: "Die Lit", duration: 160, coverUrl: "/albums/dieLit.jpg", audioUrl: "/audio/dielit/rip.mp3", liked: true },
+  { id: "3", title: "Shoota (feat. Lil Uzi Vert)", artist: "Playboi Carti", album: "Die Lit", duration: 210, coverUrl: "/albums/dieLit.jpg", audioUrl: "/audio/dielit/shoota.mp3", liked: false },
+  { id: "4", title: "Poke It Out (feat. Nicki Minaj)", artist: "Playboi Carti", album: "Die Lit", duration: 195, coverUrl: "/albums/dieLit.jpg", audioUrl: "/audio/dielit/pokeitout.mp3", liked: false },
+
+  // Playboi Carti (Self-Titled)
+  { id: "5", title: "Location", artist: "Playboi Carti", album: "Playboi Carti", duration: 180, coverUrl: "/albums/selfTitled.jpg", audioUrl: "/audio/selftitled/location.mp3", liked: true },
+  { id: "6", title: "Magnolia", artist: "Playboi Carti", album: "Playboi Carti", duration: 210, coverUrl: "/albums/selfTitled.jpg", audioUrl: "/audio/selftitled/magnolia.mp3", liked: false },
+  { id: "7", title: "wokeuplikethis* (feat. Lil Uzi Vert)", artist: "Playboi Carti", album: "Playboi Carti", duration: 190, coverUrl: "/albums/selfTitled.jpg", audioUrl: "/audio/selftitled/wokeuplikethis.mp3", liked: false },
+
+  // Whole Lotta Red
+  { id: "8", title: "Rockstar Made", artist: "Playboi Carti", album: "Whole Lotta Red", duration: 180, coverUrl: "/albums/WLR.jpg", audioUrl: "/audio/wlr/rockstarmade.mp3", liked: false },
+  { id: "9", title: "Go2DaMoon (feat. Kanye West)", artist: "Playboi Carti", album: "Whole Lotta Red", duration: 150, coverUrl: "/albums/WLR.jpg", audioUrl: "/audio/wlr/go2damoon.mp3", liked: true },
+  { id: "10", title: "Stop Breathing", artist: "Playboi Carti", album: "Whole Lotta Red", duration: 170, coverUrl: "/albums/WLR.jpg", audioUrl: "/audio/wlr/stopbreathing.mp3", liked: false },
+
+  // My Beautiful Dark Twisted Fantasy (Kanye West)
+  { id: "11", title: "Dark Fantasy", artist: "Kanye West", album: "My Beautiful Dark Twisted Fantasy", duration: 255, coverUrl: "/albums/MBDTF.jpg", audioUrl: "/audio/mbdtf/darkfantasy.mp3", liked: false },
+  { id: "12", title: "POWER", artist: "Kanye West", album: "My Beautiful Dark Twisted Fantasy", duration: 292, coverUrl: "/albums/MBDTF.jpg", audioUrl: "/audio/mbdtf/power.mp3", liked: true },
+  { id: "13", title: "All of the Lights", artist: "Kanye West", album: "My Beautiful Dark Twisted Fantasy", duration: 299, coverUrl: "/albums/MBDTF.jpg", audioUrl: "/audio/mbdtf/allofthelights.mp3", liked: false },
+
+  // Father Stretch My Hands Pt.1 (Kanye West)
+  { id: "14", title: "Father Stretch My Hands Pt. 1", artist: "Kanye West", album: "Father Stretch My Hands Pt.1", duration: 140, coverUrl: "/albums/FSMH.jpg", audioUrl: "/audio/fsmh/pt1.mp3", liked: false },
+  { id: "15", title: "Pt. 2", artist: "Kanye West", album: "Father Stretch My Hands Pt.1", duration: 160, coverUrl: "/albums/FSMH.jpg", audioUrl: "/audio/fsmh/pt2.mp3", liked: false },
 ]
 
 const mockAlbums: Album[] = [
@@ -200,17 +124,11 @@ const mockAlbums: Album[] = [
 ]
 
 const mockPlaylists: Playlist[] = [
-  {
-    id: "1",
-    name: "Liked Songs",
-    coverUrl: "/placeholder.svg?height=300&width=300",
-    songCount: 42,
-    songs: mockSongs.filter((song) => song.liked),
-  },
+ 
   {
     id: "2",
     name: "Chill Vibes",
-    coverUrl: "/placeholder.svg?height=300&width=300",
+    coverUrl: "/chill.png",
     songCount: 28,
     songs: mockSongs,
   },
@@ -232,7 +150,7 @@ export default function MusicPlayer() {
   const [selectedAlbum, setSelectedAlbum] = useState<Album | null>(null)
 
   const audioRef = useRef<HTMLAudioElement>(null)
-
+  const router = useRouter();
   // Format time helper
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
@@ -299,337 +217,52 @@ export default function MusicPlayer() {
     <div className="h-screen bg-[#1a1a1a] text-white flex flex-col">
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
-        <Sidebar activeView={activeView} setActiveView={setActiveView} playlists={mockPlaylists} />
+        <Sidebar activeView="home" setActiveView={setActiveView} playlists={mockPlaylists} />
 
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Top Bar */}
-          <div className="h-16 bg-gradient-to-b from-[#1e1e1e]/80 to-transparent flex items-center justify-between px-8 backdrop-blur-xl border-b border-[#2a2a2a]/50">
-            <div className="flex items-center gap-4">
-              <button className="w-9 h-9 rounded-full bg-[#2a2a2a]/60 flex items-center justify-center text-[#8a8a8a] hover:text-white hover:bg-[#3a3a3a]/60 transition-all duration-200">
-                ←
-              </button>
-              <button className="w-9 h-9 rounded-full bg-[#2a2a2a]/60 flex items-center justify-center text-[#8a8a8a] hover:text-white hover:bg-[#3a3a3a]/60 transition-all duration-200">
-                →
-              </button>
-            </div>
-            <div className="flex items-center gap-4">
-              <button className="px-6 py-2.5 bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 rounded-full text-sm font-semibold transition-all duration-200 shadow-lg">
-                Upgrade
-              </button>
-              <button
-                onClick={() => setIsProfileModalOpen(true)}
-                className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-400 to-violet-600 flex items-center justify-center hover:scale-105 transition-transform duration-200 shadow-lg"
-              >
-                <User size={18} className="text-white" />
-              </button>
-            </div>
-          </div>
+          <TopBar setIsProfileModalOpen={setIsProfileModalOpen} />
 
           {/* Content */}
           <div className="flex-1 overflow-y-auto px-8 pb-8">
-            {selectedAlbum ? (
-              <AlbumDetail
-                album={selectedAlbum}
-                onBack={closeAlbum}
-                onPlaySong={playSong}
-                onToggleLike={toggleLike}
-                formatTime={formatTime}
-              />
-            ) : (
-              <>
-                {activeView === "home" && (
-                  <div className="space-y-10">
+            
+          <div className="space-y-10">
                     {/* Greeting */}
                     <div className="pt-6">
-                      <h2 className="text-4xl font-bold mb-3 bg-gradient-to-r from-white to-[#b0b0b0] bg-clip-text text-transparent">
+                      <h2 className="text-2xl font-bold mb-3 bg-gradient-to-r from-white to-[#b0b0b0] bg-clip-text text-transparent">
                         Good evening
                       </h2>
-                      <p className="text-[#8a8a8a] text-lg">Ready to discover new music?</p>
+                      <p className="text-[#8a8a8a] font-semibold text-sm">Ready to discover new music?</p>
                     </div>
 
-                    {/* Quick Access */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {mockPlaylists.slice(0, 6).map((playlist) => (
-                        <button
-                          key={playlist.id}
-                          className="flex items-center gap-4 bg-[#2a2a2a]/30 hover:bg-[#2a2a2a]/50 rounded-2xl p-3 transition-all duration-300 group shadow-lg hover:shadow-xl"
-                        >
-                          <img
-                            src={playlist.coverUrl || "/placeholder.svg"}
-                            alt={playlist.name}
-                            className="w-20 h-20 rounded-xl object-cover shadow-md"
-                          />
-                          <span className="font-semibold text-lg">{playlist.name}</span>
-                          <div className="ml-auto opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:scale-105">
-                            <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-violet-600 rounded-full flex items-center justify-center shadow-lg">
-                              <Play size={20} fill="white" className="ml-0.5" />
-                            </div>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-
-                    {/* Recently Played */}
                     <div>
-                      <h3 className="text-3xl font-bold mb-8 text-white">Recently played</h3>
-                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
+                      <h3 className="text-3xl font-bold mb-4 text-white">Albums</h3>
+                      <div className="flex flex-wrap gap-6 ">
                         {mockAlbums.slice(0, 5).map((album) => (
-                          <div key={album.id} className="group cursor-pointer" onClick={() => openAlbum(album)}>
-                            <div className="relative mb-6">
+                          <div key={album.id} className="group cursor-pointer" onClick={() => router.push(`/album/${album.id}`)}>
+                            <div className="relative mb-4 w-50 h-50">
                               <img
                                 src={album.coverUrl || "/placeholder.svg"}
                                 alt={album.title}
-                                className="w-full h-70  rounded-2xl shadow-xl transition-transform duration-300 group-hover:scale-105"
+                                className=" w-full aspect-square object-cover rounded-xl shadow-xl "
                               />
                               <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
-                                <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-violet-600 rounded-full flex items-center justify-center shadow-2xl">
-                                  <Play size={20} fill="white" className="ml-0.5" />
+                                <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-2xl">
+                                  <Play size={30} fill="#9F26D8" className="ml-0.5" />
                                 </div>
                               </div>
                             </div>
-                            <h4 className="font-bold text-lg mb-2 truncate">{album.title}</h4>
-                            <p className="text-[#8a8a8a] truncate">{album.artist}</p>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Made for You */}
-                    <div>
-                      <h3 className="text-3xl font-bold mb-8 text-white">Made for you</h3>
-                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
-                        {mockPlaylists.map((playlist) => (
-                          <div key={playlist.id} className="group cursor-pointer">
-                            <div className="relative mb-6">
-                              <img
-                                src={playlist.coverUrl || "/placeholder.svg"}
-                                alt={playlist.name}
-                                className="w-full aspect-square object-cover rounded-2xl shadow-xl transition-transform duration-300 group-hover:scale-105"
-                              />
-                              <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
-                                <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-violet-600 rounded-full flex items-center justify-center shadow-2xl">
-                                  <Play size={20} fill="white" className="ml-0.5" />
-                                </div>
-                              </div>
-                            </div>
-                            <h4 className="font-bold text-lg mb-2 truncate">{playlist.name}</h4>
-                            <p className="text-[#8a8a8a] truncate">{playlist.songCount} songs</p>
+                            <h4 className="font-bold text-lg  truncate w-40">{album.title}</h4>
+                            <p className="text-[#8a8a8a] text-[12px] font-semibold truncate w-40">{album.artist}</p>
                           </div>
                         ))}
                       </div>
                     </div>
                   </div>
-                )}
-
-                {activeView === "search" && (
-                  <div className="space-y-8">
-                    <div className="pt-6">
-                      <h2 className="text-4xl font-bold mb-8 bg-gradient-to-r from-white to-[#b0b0b0] bg-clip-text text-transparent">
-                        Search
-                      </h2>
-                      <div className="relative max-w-lg">
-                        <Search
-                          className="absolute left-4 top-1/2 transform -translate-y-1/2 text-[#8a8a8a]"
-                          size={20}
-                        />
-                        <input
-                          type="text"
-                          placeholder="What do you want to listen to?"
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          className="w-full pl-12 pr-6 py-4 bg-[#2a2a2a]/50 rounded-2xl text-white placeholder-[#8a8a8a] focus:outline-none focus:ring-2 focus:ring-purple-600 focus:bg-[#2a2a2a]/70 transition-all duration-200 backdrop-blur-sm"
-                        />
-                      </div>
-                    </div>
-
-                    {searchQuery ? (
-                      <div className="space-y-8">
-                        {/* Albums Results */}
-                        {filteredAlbums.length > 0 && (
-                          <div>
-                            <h3 className="text-2xl font-bold mb-6">Albums</h3>
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-                              {filteredAlbums.map((album) => (
-                                <div key={album.id} className="group cursor-pointer" onClick={() => openAlbum(album)}>
-                                  <div className="relative mb-4">
-                                    <img
-                                      src={album.coverUrl || "/placeholder.svg"}
-                                      alt={album.title}
-                                      className="w-full aspect-square object-cover rounded-2xl shadow-lg transition-transform duration-300 group-hover:scale-105"
-                                    />
-                                    <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                                      <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-violet-600 rounded-full flex items-center justify-center shadow-lg">
-                                        <Play size={16} fill="white" className="ml-0.5" />
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <h4 className="font-semibold mb-1 truncate">{album.title}</h4>
-                                  <p className="text-sm text-[#8a8a8a] truncate">{album.artist}</p>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Songs Results */}
-                        {filteredSongs.length > 0 && (
-                          <div>
-                            <h3 className="text-2xl font-bold mb-6">Songs</h3>
-                            <div className="space-y-3">
-                              {filteredSongs.map((song, index) => (
-                                <div
-                                  key={song.id}
-                                  className="flex items-center gap-4 p-4 rounded-2xl hover:bg-[#2a2a2a]/50 cursor-pointer group transition-all duration-200"
-                                  onClick={() => playSong(song)}
-                                >
-                                  <div className="relative">
-                                    <img
-                                      src={song.coverUrl || "/placeholder.svg"}
-                                      alt={song.title}
-                                      className="w-14 h-14 rounded-xl object-cover shadow-md"
-                                    />
-                                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-xl">
-                                      <Play size={18} fill="white" className="ml-0.5" />
-                                    </div>
-                                  </div>
-                                  <div className="flex-1 min-w-0">
-                                    <p className="font-semibold truncate text-white">{song.title}</p>
-                                    <p className="text-sm text-[#8a8a8a] truncate">{song.artist}</p>
-                                  </div>
-                                  <p className="text-sm text-[#8a8a8a] font-mono">{formatTime(song.duration)}</p>
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      toggleLike(song.id)
-                                    }}
-                                    className="opacity-0 group-hover:opacity-100 transition-opacity p-2 rounded-lg hover:bg-[#3a3a3a]/50"
-                                  >
-                                    <Heart
-                                      size={18}
-                                      className={song.liked ? "fill-purple-400 text-purple-400" : "text-[#8a8a8a]"}
-                                    />
-                                  </button>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    ) : (
-                      <div>
-                        <h3 className="text-2xl font-bold mb-6">Browse all</h3>
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                          {["Pop", "Hip-Hop", "Rock", "Electronic", "Jazz", "Classical", "R&B", "Country"].map(
-                            (genre) => (
-                              <div
-                                key={genre}
-                                className="aspect-square bg-gradient-to-br from-purple-600 to-violet-800 rounded-2xl p-6 cursor-pointer hover:scale-105 transition-transform duration-300 shadow-xl"
-                              >
-                                <h4 className="text-2xl font-bold">{genre}</h4>
-                              </div>
-                            ),
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {activeView === "albums" && (
-                  <div className="space-y-8">
-                    <div className="pt-6">
-                      <h2 className="text-4xl font-bold mb-8 bg-gradient-to-r from-white to-[#b0b0b0] bg-clip-text text-transparent">
-                        Albums
-                      </h2>
-                      <div className="flex gap-3 mb-8">
-                        <button className="px-6 py-3 bg-purple-600 rounded-2xl text-sm font-semibold shadow-lg">
-                          All Albums
-                        </button>
-                        <button className="px-6 py-3 bg-[#2a2a2a] hover:bg-[#3a3a3a] rounded-2xl text-sm font-semibold transition-colors">
-                          Recently Added
-                        </button>
-                        <button className="px-6 py-3 bg-[#2a2a2a] hover:bg-[#3a3a3a] rounded-2xl text-sm font-semibold transition-colors">
-                          A-Z
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
-                      {mockAlbums.map((album) => (
-                        <div key={album.id} className="group cursor-pointer" onClick={() => openAlbum(album)}>
-                          <div className="relative mb-4">
-                            <img
-                              src={album.coverUrl || "/placeholder.svg"}
-                              alt={album.title}
-                              className="w-full aspect-square object-cover rounded-2xl shadow-xl transition-transform duration-300 group-hover:scale-105"
-                            />
-                            <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
-                              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-violet-600 rounded-full flex items-center justify-center shadow-2xl">
-                                <Play size={16} fill="white" className="ml-0.5" />
-                              </div>
-                            </div>
-                          </div>
-                          <h4 className="font-bold mb-1 truncate">{album.title}</h4>
-                          <p className="text-sm text-[#8a8a8a] truncate">{album.artist}</p>
-                          <p className="text-xs text-[#6a6a6a] truncate">
-                            {album.year} • {album.genre}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {activeView === "library" && (
-                  <div className="space-y-8">
-                    <div className="pt-6">
-                      <h2 className="text-4xl font-bold mb-8 bg-gradient-to-r from-white to-[#b0b0b0] bg-clip-text text-transparent">
-                        Your Library
-                      </h2>
-                      <div className="flex gap-3 mb-8">
-                        <button className="px-6 py-3 bg-purple-600 rounded-2xl text-sm font-semibold shadow-lg">
-                          All
-                        </button>
-                        <button className="px-6 py-3 bg-[#2a2a2a] hover:bg-[#3a3a3a] rounded-2xl text-sm font-semibold transition-colors">
-                          Playlists
-                        </button>
-                        <button className="px-6 py-3 bg-[#2a2a2a] hover:bg-[#3a3a3a] rounded-2xl text-sm font-semibold transition-colors">
-                          Artists
-                        </button>
-                        <button className="px-6 py-3 bg-[#2a2a2a] hover:bg-[#3a3a3a] rounded-2xl text-sm font-semibold transition-colors">
-                          Albums
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="space-y-4">
-                      {mockPlaylists.map((playlist) => (
-                        <div
-                          key={playlist.id}
-                          className="flex items-center gap-6 p-4 rounded-2xl hover:bg-[#2a2a2a]/50 cursor-pointer group transition-all duration-200"
-                        >
-                          <img
-                            src={playlist.coverUrl || "/placeholder.svg"}
-                            alt={playlist.name}
-                            className="w-20 h-20 rounded-xl object-cover shadow-lg"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <h4 className="font-bold text-lg mb-1">{playlist.name}</h4>
-                            <p className="text-[#8a8a8a]">Playlist • {playlist.songCount} songs</p>
-                          </div>
-                          <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                            <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-violet-600 rounded-full flex items-center justify-center shadow-lg">
-                              <Play size={20} fill="white" className="ml-0.5" />
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </>
-            )}
+                
+               
+             
           </div>
         </div>
       </div>

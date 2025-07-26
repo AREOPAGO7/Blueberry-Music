@@ -58,7 +58,7 @@ export function PlayerBar({
           <img
             src={currentSong.coverUrl || "/placeholder.svg"}
             alt={currentSong.title}
-            className="w-16 h-16 rounded-xl object-cover shadow-lg"
+            className="w-16 h-16 rounded-lg object-cover shadow-lg"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-xl" />
         </div>
@@ -68,9 +68,9 @@ export function PlayerBar({
         </div>
         <button
           onClick={() => toggleLike(currentSong.id)}
-          className="text-[#8a8a8a] hover:text-white transition-colors p-2 rounded-lg hover:bg-[#2a2a2a]"
+          className="text-[#8a8a8a] hover:text-white transition-colors cursor-pointer p-2 rounded-lg hover:bg-[#2a2a2a]"
         >
-          <Heart size={18} className={currentSong.liked ? "fill-purple-400 text-purple-400" : ""} />
+          <Heart size={18} className={currentSong.liked ? "fill-purple-400 text-purple-400 cursor-pointer" : "cursor-pointer"} />
         </button>
       </div>
 
@@ -80,26 +80,26 @@ export function PlayerBar({
           <button
             onClick={() => setIsShuffled(!isShuffled)}
             className={`p-2 rounded-lg transition-all duration-200 ${
-              isShuffled ? "text-purple-400 bg-purple-400/10" : "text-[#8a8a8a] hover:text-white hover:bg-[#2a2a2a]"
+              isShuffled ? "text-purple-400 bg-purple-400/10" : "text-[#8a8a8a] cursor-pointer hover:text-white hover:bg-[#2a2a2a]"
             }`}
           >
             <Shuffle size={18} />
           </button>
           <button
             onClick={skipToPrevious}
-            className="text-[#8a8a8a] hover:text-white transition-colors p-2 rounded-lg hover:bg-[#2a2a2a]"
+            className="text-[#8a8a8a] hover:text-white transition-colors cursor-pointer p-2 rounded-lg hover:bg-[#2a2a2a]"
           >
             <SkipBack size={22} />
           </button>
           <button
             onClick={togglePlayPause}
-            className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-black hover:scale-105 transition-all duration-200 shadow-lg"
+            className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-black cursor-pointer shadow-lg"
           >
             {isPlaying ? <Pause size={22} /> : <Play size={22} className="ml-0.5" />}
           </button>
           <button
             onClick={skipToNext}
-            className="text-[#8a8a8a] hover:text-white transition-colors p-2 rounded-lg hover:bg-[#2a2a2a]"
+            className="text-[#8a8a8a] hover:text-white transition-colors p-2 cursor-pointer rounded-lg hover:bg-[#2a2a2a]"
           >
             <SkipForward size={22} />
           </button>
@@ -108,7 +108,7 @@ export function PlayerBar({
             className={`p-2 rounded-lg transition-all duration-200 relative ${
               repeatMode !== "off"
                 ? "text-purple-400 bg-purple-400/10"
-                : "text-[#8a8a8a] hover:text-white hover:bg-[#2a2a2a]"
+                : "text-[#8a8a8a] cursor-pointer hover:text-white hover:bg-[#2a2a2a]"
             }`}
           >
             <Repeat size={18} />
