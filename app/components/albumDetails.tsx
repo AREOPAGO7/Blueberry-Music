@@ -122,7 +122,9 @@ export default function AlbumDetail({ album,  formatTime}: {  //onBack, onPlaySo
                 <div className="min-w-0">
                   <p className="font-semibold truncate text-white group-hover:text-white">{song.title}</p>
                   <p className="text-sm text-[#8a8a8a] truncate">{song.artist}</p>
+                  
                 </div>
+                <audio src={song.audio_url} controls />
                 <div className="w-16 flex justify-center">
                   <button
                     onClick={(e) => {
