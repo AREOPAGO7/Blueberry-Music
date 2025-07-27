@@ -25,10 +25,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Optional: hydrate from API on first load
   useEffect(() => {
     const getUser = async () => {
-      const res = await fetch('/api/me');
-      if (res.ok) {
-        const data = await res.json();
-        setUser(data.user);
+      try {
+        const res = await fetch('/api/me');
+        if (res.ok) {
+          const data = await res.json();
+          setUser(data.user);
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        console.error('Error fetching user:', error);
+        setUser(null);
       }
     };
     getUser();
