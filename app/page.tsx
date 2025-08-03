@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Play, Heart, Search, User } from "lucide-react"  
 import { Sidebar } from "@/app/components/sidebar"
-import { PlayerBar } from "@/app/components/player-bar"
+
 import { ProfileModal } from "@/app/components/profile-modal"
 import { useRouter } from 'next/navigation';
 import TopBar from '@/app/components/topBar';
@@ -146,12 +146,12 @@ export default function MusicPlayer() {
         </div>
       </div>
 
-      <PlayerBar />
+     
 
       <ProfileModal isOpen={isProfileModalOpen} onClose={() => setIsProfileModalOpen(false)} />
 
       {/* Hidden audio element for future implementation */}
-      <audio />
+     
     </div>
   )
 }

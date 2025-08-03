@@ -2,45 +2,37 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { Play, Heart, MoreHorizontal, Clock, ArrowLeft, User } from "lucide-react"
-import { Sidebar } from "@/app/components/sidebar"
-import { PlayerBar } from "@/app/components/player-bar"
-import { ProfileModal } from "@/app/components/profile-modal"
-import TopBar from '@/app/components/topBar'
+import { Play, Heart, MoreHorizontal, Clock, ArrowLeft, User, Pause } from "lucide-react"
+
 import { AlbumWithSongs, getAlbumWithSongs } from '@/services/songsServices'
 import { Album, Song } from "@/app/types/songsTypes"
+import { usePlayerStore } from '@/app/store/usePlayerStore'
+import Image from 'next/image'
 
 
-interface Playlist {
-  id: string
-  name: string
-  coverUrl: string
-  songCount: number
-
-}
-
-
-
-
-const mockPlaylists: Playlist[] = [
- 
-  {
-    id: "2",
-    name: "Chill Vibes",
-    coverUrl: "/chill.png",
-    songCount: 28
-   
-  },
-]
-export default function AlbumDetail({ album,  formatTime}: {  //onBack, onPlaySong, onToggleLike, 
+export default function AlbumDetail({ album,  formatTime}: {  
     album: Album
-    // onBack: () => void
-    // onPlaySong: (song: Song, songList: Song[]) => void
-    // onToggleLike: (songId: string) => void
      formatTime: (seconds: number) => string
   }) {
     const totalDuration = album.songs.reduce((total: any, song: { duration: any }) => total + song.duration, 0)
-  
+    const { setQueue, setSong , toggle, isPlaying , currentSong , setHasUserInteracted } = usePlayerStore()
+    useEffect(() => {
+      setQueue(album.songs)
+    }, [album.songs])
+
+   
+    const handlePlaySong = (song: Song) => {
+      setHasUserInteracted(true); 
+     if(isPlaying && currentSong?.id === song.id) {
+      toggle()
+      
+     } 
+    else {
+      setSong(song) 
+     toggle()
+     }
+     
+    }
     return (
       <div className="space-y-8">
         {/* Back Button */}
@@ -77,11 +69,11 @@ export default function AlbumDetail({ album,  formatTime}: {  //onBack, onPlaySo
             {album.genre && <p className="text-[#8a8a8a] text-sm font-semibold  mb-6">{album.genre}</p>}
             <div className="flex items-center gap-4">
               <button
-                // onClick={() => album.songs.length > 0 && onPlaySong(album.songs[0], album.songs)}
+                 onClick={() => {handlePlaySong(album.songs[0])}}
                 className="w-14 h-14 bg-gradient-to-br from-gray-600 to-violet-400 rounded-full flex items-center justify-center  disabled:cursor-not-allowed cursor-pointer"
                 disabled={album.songs.length === 0}
               >
-                <Play size={24} fill="white" className="ml-1" />
+               {isPlaying && currentSong?.id === album.songs[0].id ? <Pause size={24} fill="white" className="ml-1" /> : <Play size={24} fill="white" className="ml-1" />}
               </button>
               <button className="text-[#8a8a8a] hover:text-white transition-colors p-3 rounded-full hover:bg-[#2a2a2a]">
                 <Heart size={24} />
@@ -115,12 +107,14 @@ export default function AlbumDetail({ album,  formatTime}: {  //onBack, onPlaySo
                 className="grid grid-cols-[auto_1fr_auto_auto] gap-4 px-4 py-3 rounded-xl hover:bg-[#2a2a2a]/50 cursor-pointer group transition-all duration-200"
                 // onClick={() => onPlaySong(song, album.songs)}
               >
-                <div className="w-8 text-center text-[#8a8a8a] group-hover:text-white flex items-center justify-center">
-                  <span className="group-hover:hidden">{index + 1}</span>
-                  <Play size={16} fill="white" className="hidden group-hover:block ml-0.5" />
+                <div onClick={() => {handlePlaySong(song)}} className="w-8 text-center text-[#8a8a8a] group-hover:text-white flex items-center justify-center">
+                  <span className="group-hover:hidden">{isPlaying && currentSong?.id === song.id ? 
+                        <Image src="/sound.gif" alt="pause" width={50} height={50} /> 
+                        : index + 1}</span>
+                  {isPlaying && currentSong?.id === song.id ? <Pause size={16} fill="white" className="hidden group-hover:block ml-0.5" /> : <Play size={16} fill="white" className="hidden group-hover:block ml-0.5" />}
                 </div>
                 <div className="min-w-0">
-                  <p className="font-semibold truncate text-white group-hover:text-white">{song.title}</p>
+                  <p className={`font-semibold truncate ${isPlaying && currentSong?.id === song.id ? "text-violet-400" : "text-white"}  `}>{song.title}</p>
                   <p className="text-sm text-[#8a8a8a] truncate">{song.artist}</p>
                 </div>
                 <div className="w-16 flex justify-center">

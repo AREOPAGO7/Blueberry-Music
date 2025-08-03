@@ -9,6 +9,7 @@ import TopBar from '@/app/components/topBar'
 import { AlbumWithSongs, getAlbumWithSongs } from '@/services/songsServices'
 import { Song } from "@/app/types/songsTypes"
 import AlbumDetail from '@/app/components/albumDetails'
+import Image from 'next/image'
 
 interface Playlist {
   id: string
@@ -127,7 +128,7 @@ export default function AlbumPage() {
   if (loading) {
     return (
       <div className="h-screen bg-[#1a1a1a] text-white flex items-center justify-center">
-        <div className="text-lg">Loading...</div>
+        <Image src="/sound.gif" alt="pause" width={60} height={60} /> 
       </div>
     )
   }
@@ -176,20 +177,9 @@ export default function AlbumPage() {
         </div>
       </div>
 
-      <PlayerBar
-        // currentSong={currentSong}
-        // isPlaying={isPlaying}
-        // currentTime={currentTime}
-        // volume={volume}
-        // isShuffled={isShuffled}
-        // repeatMode={repeatMode}
-        // togglePlayPause={togglePlayPause}
-        // skipToNext={skipToNext}
-        // skipToPrevious={skipToPrevious}
-        // toggleLike={handleToggleLike}
-        // setIsShuffled={setIsShuffled}
-        // setRepeatMode={setRepeatMode}
-      />
+    
+
+
 
       <ProfileModal 
         isOpen={isProfileModalOpen} 

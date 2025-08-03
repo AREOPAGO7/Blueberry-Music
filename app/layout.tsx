@@ -6,6 +6,8 @@ import 'primereact/resources/themes/lara-light-indigo/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import { ToastProvider } from "./components/ToastProvider";
+import { PlayerBar } from "./components/player-bar";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -32,9 +34,16 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#1a1a1a]`}
       >
         <AuthProvider>
-        <ToastProvider>
-          {children}
-        </ToastProvider>
+          <ToastProvider>
+            <div className="min-h-screen flex flex-col">
+              <main className="flex-1 pb-24">
+                {children}
+              </main>
+              <div className="fixed bottom-0 left-0 right-0 z-50">
+                <PlayerBar />
+              </div>
+            </div>
+          </ToastProvider>
         </AuthProvider>
       </body>
     </html>
